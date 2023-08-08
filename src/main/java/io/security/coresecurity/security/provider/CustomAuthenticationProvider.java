@@ -1,5 +1,6 @@
 package io.security.coresecurity.security.provider;
 
+import io.security.coresecurity.security.common.FormWebAuthenticationDetails;
 import io.security.coresecurity.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,6 +27,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         if(!passwordEncoder.matches(password,userDetails.getPassword())){
             throw new BadCredentialsException("BadCredentialsException");
+        }
+
+        String secretKey = ((FormWebAuthenticationDetails) authentication.getDetails()).getSecretKey();
+
+        if(secretKey == null || !secretKey.equals("secret")){
+            throw new IllegalArgumentException("Invalid Secret");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =

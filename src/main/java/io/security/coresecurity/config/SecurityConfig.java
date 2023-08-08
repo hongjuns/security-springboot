@@ -1,6 +1,8 @@
 package io.security.coresecurity.config;
 
 
+import io.security.coresecurity.security.common.FormWebAuthenticationDetailsSource;
+import io.security.coresecurity.security.handler.FormAuthenticationFailureHandler;
 import io.security.coresecurity.security.provider.CustomAuthenticationProvider;
 import io.security.coresecurity.security.service.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +18,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
+    @Autowired
+    private FormWebAuthenticationDetailsSource formWebAuthenticationDetailsSource;
+    @Autowired
+    private AuthenticationSuccessHandler formAuthenticationSuccessHandler;
+    @Autowired
+    private FormAuthenticationFailureHandler formAuthenticationFailureHandler;
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationToken());
@@ -55,6 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
+                .authenticationDetailsSource(formWebAuthenticationDetailsSource)
+                .successHandler(formAuthenticationSuccessHandler)
+                .failureHandler(formAuthenticationFailureHandler)
                 .permitAll();
     }
 }
