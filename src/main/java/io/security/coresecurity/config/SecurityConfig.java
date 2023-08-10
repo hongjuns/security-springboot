@@ -2,6 +2,7 @@ package io.security.coresecurity.config;
 
 
 import io.security.coresecurity.security.common.FormWebAuthenticationDetailsSource;
+import io.security.coresecurity.security.handler.FormAccessDeniedHandler;
 import io.security.coresecurity.security.handler.FormAuthenticationFailureHandler;
 import io.security.coresecurity.security.provider.CustomAuthenticationProvider;
 import io.security.coresecurity.security.service.UserDetailsServiceImpl;
@@ -18,7 +19,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationSuccessHandler formAuthenticationSuccessHandler;
     @Autowired
     private FormAuthenticationFailureHandler formAuthenticationFailureHandler;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationToken());
@@ -43,6 +47,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler (){
+        FormAccessDeniedHandler commonAccessDeniedHandler = new FormAccessDeniedHandler();
+        commonAccessDeniedHandler.setErrorPage("/denied");
+        return commonAccessDeniedHandler;
     }
 
     @Override
@@ -59,6 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated()
+
                 .and()
                 .formLogin()
                 .loginPage("/login")
@@ -66,6 +78,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationDetailsSource(formWebAuthenticationDetailsSource)
                 .successHandler(formAuthenticationSuccessHandler)
                 .failureHandler(formAuthenticationFailureHandler)
-                .permitAll();
+                .permitAll()
+
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler());
     }
 }
