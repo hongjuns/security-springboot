@@ -10,6 +10,6 @@ SpringBoot Security Workflow
 ## 2) Spring Security - Custom filter (LoginForm)
 
 <p align="center">
-<img width="900" alt="custom" src="https://github.com/hongjuns/springboot-security/assets/39370772/b2b2285c-92ce-4609-8121-c33179a00588">
+<img alt="custom" src="https://github.com/hongjuns/springboot-security/assets/39370772/b2b2285c-92ce-4609-8121-c33179a00588">
 </p>
 
